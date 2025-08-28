@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity, UserRole } from 'src/db/entities/user.entity';
 import { Repository, ILike } from 'typeorm';
-import { CreateUsersDTO } from './users.dto';
+import { UsersDTO } from './users.dto';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { EmailService } from 'src/mailer/mailer.service';
@@ -17,7 +17,7 @@ export class UsersService {
     private readonly emailService: EmailService,
   ) {}
   
-    async create(createUserDto: CreateUsersDTO){
+    async create(createUserDto: UsersDTO){
       const email = createUserDto.email
       let user = await this.usersRepository.findOneBy({email})
       if (user)
@@ -57,6 +57,7 @@ export class UsersService {
         : undefined;
 
       return this.usersRepository.find({
+        // select: ['name', 'email'],
         where,
         order: { created_at: 'DESC' },
       });
