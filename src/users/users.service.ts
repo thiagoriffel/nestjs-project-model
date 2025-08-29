@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/db/entities/user.entity';
 import { Repository, ILike } from 'typeorm';
-import { CreateUsersDTO, UserPaginationDto, UserUpdateDTO } from './users.dto';
+import { UsersCreateDTO, UserPaginationDto, UsersUpdateDTO } from './users.dto';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { EmailService } from 'src/mailer/mailer.service';
@@ -18,7 +18,7 @@ export class UsersService {
     private readonly emailService: EmailService,
   ) {}
   
-    async create(createUserDto: CreateUsersDTO){
+    async create(createUserDto: UsersCreateDTO){
       const email = createUserDto.email
       let user = await this.usersRepository.findOneBy({email})
       if (user)
@@ -67,17 +67,23 @@ export class UsersService {
       return this.usersRepository.findOneBy({email});
     }
     
-    async update(id: string, dto: UserUpdateDTO) {
-      const user = await this.usersRepository.findOne({ where: { id } });
-      if (!user) throw new NotFoundException('User not found');
-      Object.assign(user, dto);
-      return this.usersRepository.save(user);
+    async findOne(id: string) {
+      const org = await this.usersRepository.findOne({
+        where: { id }
+      });
+      if (!org) throw new NotFoundException('User not found');
+      return org;
     }
-
+    
+    async update(id: string, dto: UsersUpdateDTO) {
+      const org = await this.findOne(id)
+      Object.assign(org, dto)
+      return this.usersRepository.save(org)
+    }
+  
     async remove(id: string) {
-      const user = await this.usersRepository.findOne({ where: { id } });
-      if (!user) throw new NotFoundException('User not found');
-      await this.usersRepository.remove(user);
-      return { ok: true };
+      const org = await this.findOne(id);
+      await this.usersRepository.remove(org);
+      return { org};
     }
 }

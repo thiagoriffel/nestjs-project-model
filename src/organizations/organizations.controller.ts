@@ -1,19 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { OrganizationsService } from './organizations.service';
 import { Roles } from 'src/auth/roles.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { CreateOrganizationDto, OrganizationPaginationDto, UpdateOrganizationDto } from './organization.dto';
+import { OrganizationsCreateDTO, OrganizationsPaginationDTO, OrganizationsUpdateDTO } from './organizations.dto';
 
 @UseGuards(AuthGuard)
 @Roles('admin')
@@ -22,12 +11,12 @@ export class OrganizationsController {
   constructor(private readonly service: OrganizationsService) {}
 
   @Post()
-  create(@Body() dto: CreateOrganizationDto) {
+  create(@Body() dto: OrganizationsCreateDTO) {
     return this.service.create(dto as any);
   }
 
   @Get()
-  findAll(@Query() query: OrganizationPaginationDto) {
+  findAll(@Query() query: OrganizationsPaginationDTO) {
     return this.service.findAll(query as any);
   }
 
@@ -39,7 +28,7 @@ export class OrganizationsController {
   @Patch(':id')
   update(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() dto: UpdateOrganizationDto,
+    @Body() dto: OrganizationsUpdateDTO,
   ) {
     return this.service.update(id, dto as any);
   }

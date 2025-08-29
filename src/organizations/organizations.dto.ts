@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum,  IsInt,  IsOptional, IsString, Min  } from 'class-validator';
 import { StatusEnum } from 'src/db/entities/enum/status.enum';
 
-export class CreateOrganizationDto {
+export class OrganizationsCreateDTO {
   @IsString()
   name: string;
 
@@ -15,7 +15,7 @@ export class CreateOrganizationDto {
   status: string;
 }
 
-export class OrganizationPaginationDto {
+export class OrganizationsPaginationDTO {
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -31,7 +31,7 @@ export class OrganizationPaginationDto {
   q?: string;
 }
 
-export class UpdateOrganizationDto {
+export class OrganizationsUpdateDTO {
   @IsOptional()
   @IsString()
   name?: string;

@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString, IsEnum, IsInt, Min } from 'c
 import { StatusEnum } from 'src/db/entities/enum/status.enum';
 import { UserRoleEnum } from 'src/db/entities/enum/user.enum';
 
-export class CreateUsersDTO {
+export class UsersCreateDTO {
   @IsNotEmpty() @IsString()
   name: string;
 
@@ -34,7 +34,7 @@ export class UserPaginationDto {
   @IsString()
   q?: string;
 }
-export class UserUpdateDTO {
+export class UsersUpdateDTO {
   @IsOptional()
   @IsString()
   name?: string;

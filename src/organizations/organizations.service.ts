@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { OrganizationEntity } from 'src/db/entities/organization.entity';
 import { StatusEnum } from 'src/db/entities/enum/status.enum';
-import { CreateOrganizationDto, OrganizationPaginationDto, UpdateOrganizationDto } from './organization.dto';
+import { OrganizationsCreateDTO, OrganizationsPaginationDTO, OrganizationsUpdateDTO } from './organizations.dto';
 
 @Injectable()
 export class OrganizationsService {
@@ -12,7 +12,7 @@ export class OrganizationsService {
     private readonly organizationEntity: Repository<OrganizationEntity>,
   ) {}
 
-  async create(createOrganizationDto: CreateOrganizationDto) {
+  async create(createOrganizationDto: OrganizationsCreateDTO) {
     const document = createOrganizationDto.document
     const organization = await this.organizationEntity.findOneBy({ document })
     if (organization) return new BadRequestException('Organization in use');
@@ -26,7 +26,7 @@ export class OrganizationsService {
     return this.organizationEntity.save(entity);
   }
 
-  async findAll({ page = 1, limit = 20, q }: OrganizationPaginationDto) {
+  async findAll({ page = 1, limit = 20, q }: OrganizationsPaginationDTO) {
     const where = q
       ? [
           { name: ILike(`%${q}%`) },
@@ -50,7 +50,7 @@ export class OrganizationsService {
     return org;
   }
 
-  async update(id: string, dto: UpdateOrganizationDto) {
+  async update(id: string, dto: OrganizationsUpdateDTO) {
     const org = await this.findOne(id)
     Object.assign(org, dto)
     return this.organizationEntity.save(org)
