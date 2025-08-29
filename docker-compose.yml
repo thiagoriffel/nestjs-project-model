@@ -1,12 +1,17 @@
-version: '3.8'
-
+version: "3.8"
 services:
-  postgres:
-    image: postgres:latest
-    container_name: project-model
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: project_model
     ports:
       - "5432:5432"
+  api:
+    image: nest-api-local
+    depends_on: [db]
     environment:
-      POSTGRES_DB: project-model
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456789
+      PORT: "8080"
+      DATABASE_URL: "postgresql://postgres:123456@db:5432/project_model"
+    ports:
+      - "8080:8080"

@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { DbModule } from './db/db.module';
 import { MailSenderModule } from './mailer/mailer.module';
 import { OrganizationsModule } from './organizations/organizations.module';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
     MailSenderModule,
     OrganizationsModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, HealthController],
   providers: [AppService],
 })
 export class AppModule {}
