@@ -1,10 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-
-export enum UserRole {
-  ADMIN = 'admin',
-  MANAGER = 'manager',
-  USER = 'user',
-}
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { OrganizationEntity } from './organization.entity';
+import { UserRoleEnum } from './enum/user.enum';
+import { StatusEnum } from './enum/status.enum';
 
 @Entity('users')
 export class UserEntity {
@@ -20,8 +17,18 @@ export class UserEntity {
   @Column({ type: 'varchar', nullable: true })
   password: string;
   
-  @Column({ type: 'varchar', default: UserRole.USER })
-  role: UserRole;
+  @Column({ type: 'varchar', default: UserRoleEnum.USER })
+  role: UserRoleEnum;
+
+  @Column({ default: StatusEnum.ACTIVE })
+  status: string;
+
+  @Column('uuid', { name: 'organization_id' })
+  organization_id: string;
+
+  @ManyToOne(() => OrganizationEntity, (organization) => organization.users, { onDelete: 'RESTRICT', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: 'organization_id' })
+  organization: OrganizationEntity;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

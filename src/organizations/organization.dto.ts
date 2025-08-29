@@ -1,25 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsEnum, IsInt, Min } from 'class-validator';
+import { IsEnum,  IsInt,  IsOptional, IsString, Min  } from 'class-validator';
 import { StatusEnum } from 'src/db/entities/enum/status.enum';
-import { UserRoleEnum } from 'src/db/entities/enum/user.enum';
 
-export class CreateUsersDTO {
-  @IsNotEmpty() @IsString()
+export class CreateOrganizationDto {
+  @IsString()
   name: string;
 
-  @IsNotEmpty() @IsEmail()
-  email: string;
+  @IsOptional()
+  @IsString()
+  document: string;
 
   @IsOptional()
-  @ApiProperty({ enum: UserRoleEnum, default: UserRoleEnum.USER })
-  @IsEnum(UserRoleEnum)
-  role?: UserRoleEnum
-
-  @IsNotEmpty()
-  organization_id: string;
+  @IsEnum(StatusEnum)
+  status: string;
 }
 
-export class UserPaginationDto {
+export class OrganizationPaginationDto {
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -34,14 +30,15 @@ export class UserPaginationDto {
   @IsString()
   q?: string;
 }
-export class UserUpdateDTO {
+
+export class UpdateOrganizationDto {
   @IsOptional()
   @IsString()
   name?: string;
 
   @IsOptional()
   @IsString()
-  document: string;
+  document?: string;
 
   @IsOptional()
   @ApiProperty({ enum: StatusEnum, default: [StatusEnum.ACTIVE], isArray: true })

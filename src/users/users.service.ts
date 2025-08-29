@@ -1,11 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity, UserRole } from 'src/db/entities/user.entity';
+import { UserEntity } from 'src/db/entities/user.entity';
 import { Repository, ILike } from 'typeorm';
-import { UsersDTO } from './users.dto';
+import { CreateUsersDTO, UserPaginationDto, UserUpdateDTO } from './users.dto';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { EmailService } from 'src/mailer/mailer.service';
+import { UserRoleEnum } from 'src/db/entities/enum/user.enum';
 
 const scrypt = promisify(_scrypt);
 
@@ -17,7 +18,7 @@ export class UsersService {
     private readonly emailService: EmailService,
   ) {}
   
-    async create(createUserDto: UsersDTO){
+    async create(createUserDto: CreateUsersDTO){
       const email = createUserDto.email
       let user = await this.usersRepository.findOneBy({email})
       if (user)
@@ -32,38 +33,51 @@ export class UsersService {
       const saveUser = {
         email: createUserDto.email,
         name: createUserDto.name,
-        role: UserRole.USER,
-        password: saltAndHas
+        role: UserRoleEnum.USER,
+        password: saltAndHas,
+        organization_id: createUserDto.organization_id
       }
       
       try {
         await this.emailService.sendPassword(createUserDto.email, createUserDto.name, password)
         user = await this.usersRepository.save(saveUser)
       } catch (err) {
-        console.error('[Email] Falha ao enviar email de boas-vindas:', err?.message || err)
+        console.error('Err', err?.message || err)
       }
 
       return user
     }
 
-    async findAll(filter: string) {
-      const trimmed = (filter ?? '').trim();
-
-      const where = trimmed
-        ? [
-            { name: ILike(`%${trimmed}%`) },
-            { email: ILike(`%${trimmed}%`) },
-          ]
-        : undefined;
-
-      return this.usersRepository.find({
-        // select: ['name', 'email'],
-        where,
-        order: { created_at: 'DESC' },
-      });
+    async findAll({ page = 1, limit = 20, q }: UserPaginationDto) {
+        const where = q
+          ? [
+              { name: ILike(`%${q}%`) },
+              { email: ILike(`%${q}%`) }]
+          : {};
+        const [data, total] = await this.usersRepository.findAndCount({
+          where,
+          order: { created_at: 'DESC' },
+          skip: (page - 1) * limit,
+          take: limit,
+        });
+        return { data, total, page, limit };
     }
 
     async findByEmail(email: string): Promise<UserEntity | null> {
       return this.usersRepository.findOneBy({email});
+    }
+    
+    async update(id: string, dto: UserUpdateDTO) {
+      const user = await this.usersRepository.findOne({ where: { id } });
+      if (!user) throw new NotFoundException('User not found');
+      Object.assign(user, dto);
+      return this.usersRepository.save(user);
+    }
+
+    async remove(id: string) {
+      const user = await this.usersRepository.findOne({ where: { id } });
+      if (!user) throw new NotFoundException('User not found');
+      await this.usersRepository.remove(user);
+      return { ok: true };
     }
 }
