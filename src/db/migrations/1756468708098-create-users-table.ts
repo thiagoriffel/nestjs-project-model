@@ -15,7 +15,7 @@ export class CreateUsersTable1756468708098 implements MigrationInterface {
                     new TableColumn({ name: "password", type: "varchar", isNullable: true }),
                     new TableColumn({ name: "role", type: "varchar", default: "'user'" }),
                     new TableColumn({ name: "status", type: "varchar", default: "'active'" }),
-                    new TableColumn({ name: "organization_id", type: "uuid" }),
+                    new TableColumn({ name: "organization_id", type: "uuid", isNullable: true  }),
                     new TableColumn({ name: "created_at", type: "timestamptz", default: "now()" }),
                     new TableColumn({ name: "updated_at", type: "timestamptz", default: "now()" })
                 ]

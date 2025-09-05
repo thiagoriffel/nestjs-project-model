@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/db/entities/user.entity';
 import { Repository, ILike } from 'typeorm';
@@ -39,10 +39,10 @@ export class UsersService {
       }
       
       try {
-        await this.emailService.sendPassword(createUserDto.email, createUserDto.name, password)
         user = await this.usersRepository.save(saveUser)
+        await this.emailService.sendPassword(createUserDto.email, createUserDto.name, password)
       } catch (err) {
-        console.error('Err', err?.message || err)
+        return new InternalServerErrorException(err?.message || err);
       }
 
       return user

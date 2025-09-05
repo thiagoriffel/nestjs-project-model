@@ -45,11 +45,6 @@ export class AuthGuard implements CanActivate {
         ? [payload.role]
         : [];
 
-
-        console.log('===================================')
-        console.log(userRoles)
-        console.log('===================================')
-
       // Se não houver requiredRoles configurados no decorator, qualquer usuário passa
       if (requiredRoles.length > 0) {
         const hasRole = userRoles.some((role: string) => requiredRoles.includes(role));
