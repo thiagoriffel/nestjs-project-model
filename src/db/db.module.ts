@@ -7,8 +7,7 @@ import { join } from 'path';
     imports: [TypeOrmModule.forRootAsync({
         imports: [ConfigModule],
         useFactory: async (configService: ConfigService) => {
-            // Support both DATABASE_URL (single string) and individual DB_* variables
-            const databaseUrl = configService.get<string>('DATABASE_URL');
+            const databaseUrl = configService.get<string>('DB_URL');
             if (databaseUrl && databaseUrl.trim() !== '') {
                 return {
                     type: 'postgres',
