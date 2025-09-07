@@ -42,7 +42,7 @@ export class UsersService {
       }
       
       try {
-        // user = await this.usersRepository.save(saveUser)
+        user = await this.usersRepository.save(saveUser)
         // await this.emailService.sendPassword(createUserDto.email, createUserDto.name, password)
         await this.sesmailService.sendPassword(createUserDto.email, createUserDto.name, password)
       } catch (err) {
