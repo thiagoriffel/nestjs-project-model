@@ -5,7 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DbModule } from './db/db.module';
-import { MailSenderModule } from './mailer/mailer.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { HealthModule } from './health/health.module';
 
@@ -15,7 +14,6 @@ import { HealthModule } from './health/health.module';
     AuthModule,
     DbModule,
     UsersModule,
-    MailSenderModule,
     OrganizationsModule,
     HealthModule
   ],

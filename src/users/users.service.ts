@@ -5,10 +5,8 @@ import { Repository, ILike } from 'typeorm';
 import { UsersCreateDTO, UserPaginationDto, UsersUpdateDTO } from './users.dto';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
-import { EmailService } from 'src/mailer/mailer.service';
 import { UserRoleEnum } from 'src/db/entities/enum/user.enum';
 import { SesmailService } from 'src/sesmail/sesmail.service';
-import { SesmailPasswordSendDTO, SesmailSendDTO } from 'src/sesmail/sesmail.dto';
 
 const scrypt = promisify(_scrypt);
 
@@ -17,7 +15,6 @@ export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
-    private readonly emailService: EmailService,
     private readonly sesmailService: SesmailService,
   ) {}
   
@@ -43,7 +40,6 @@ export class UsersService {
       
       try {
         user = await this.usersRepository.save(saveUser)
-        // await this.emailService.sendPassword(createUserDto.email, createUserDto.name, password)
         await this.sesmailService.sendPassword(createUserDto.email, createUserDto.name, password)
       } catch (err) {
         return new InternalServerErrorException(err?.message || err);
